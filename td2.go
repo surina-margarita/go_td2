@@ -2,9 +2,9 @@ package main
 
 import (
     "fmt"
-	"math/rand"
+	//"math/rand"
 	"sync"
-	"time"
+	//"time"
 )
 
 //2
@@ -102,7 +102,7 @@ import (
 //     fmt.Println("Fini")
 // }
 
-//5.1 à tester
+//5.1 
 // func goroutine(id, P, K int, ch chan int, wg *sync.WaitGroup) {
 //     defer wg.Done()
 //     for i := 0; i < K; i++ {
@@ -134,7 +134,7 @@ import (
 //     fmt.Println("Fini")
 // }
 
-// //5.2 à tester
+// //5.2 
 // func goroutine(id, P, K int, in, out chan int, wg *sync.WaitGroup) {
 //     defer wg.Done()
 //     for i := 0; i < K; i++ {
@@ -172,80 +172,80 @@ import (
 // }
 
 //6
-// // Fonction pour fusionner deux tableaux triés
-// func merge(left, right []int) []int {
-//     result := make([]int, 0, len(left)+len(right))
-//     i, j := 0, 0
+// Fonction pour fusionner deux tableaux triés
+func merge(left, right []int) []int {
+    result := make([]int, 0, len(left)+len(right))
+    i, j := 0, 0
 
-//     for i < len(left) && j < len(right) {
-//         if left[i] < right[j] {
-//             result = append(result, left[i])
-//             i++
-//         } else {
-//             result = append(result, right[j])
-//             j++
-//         }
-//     }
+    for i < len(left) && j < len(right) {
+        if left[i] < right[j] {
+            result = append(result, left[i])
+            i++
+        } else {
+            result = append(result, right[j])
+            j++
+        }
+    }
 
-//     // Ajouter les éléments restants
-//     result = append(result, left[i:]...)
-//     result = append(result, right[j:]...)
+    // Ajouter les éléments restants
+    result = append(result, left[i:]...)
+    result = append(result, right[j:]...)
 
-//     return result
-// }
+    return result
+}
 
-// // Fonction mergeSort parallèle
-// func mergeSort(arr []int, wg *sync.WaitGroup, ch chan []int) {
-//     defer wg.Done()
+// Fonction mergeSort parallèle
+func mergeSort(arr []int, wg *sync.WaitGroup, ch chan []int) {
+    defer wg.Done()
 
-//     // Si le tableau contient un seul élément ou est vide, il est déjà trié
-//     if len(arr) <= 1 {
-//         ch <- arr
-//         return
-//     }
+    // Si le tableau contient un seul élément ou est vide, il est déjà trié
+    if len(arr) <= 1 {
+        ch <- arr
+        return
+    }
 
-//     // Diviser le tableau en deux parties
-//     mid := len(arr) / 2
-//     leftChan := make(chan []int, 1)
-//     rightChan := make(chan []int, 1)
+    // Diviser le tableau en deux parties
+    mid := len(arr) / 2
+    leftChan := make(chan []int, 1)
+    rightChan := make(chan []int, 1)
 
-//     var subWg sync.WaitGroup
-//     subWg.Add(2)
+    var subWg sync.WaitGroup
+    subWg.Add(2)
 
-//     // Lancer les goroutines pour trier chaque moitié
-//     go mergeSort(arr[:mid], &subWg, leftChan)
-//     go mergeSort(arr[mid:], &subWg, rightChan)
+    // Lancer les goroutines pour trier chaque moitié
+    go mergeSort(arr[:mid], &subWg, leftChan)
+    go mergeSort(arr[mid:], &subWg, rightChan)
 
-//     // Attendre que les deux moitiés soient triées
-//     subWg.Wait()
-//     close(leftChan)
-//     close(rightChan)
+    // Attendre que les deux moitiés soient triées
+    subWg.Wait()
+    close(leftChan)
+    close(rightChan)
 
-//     // Fusionner les résultats
-//     left := <-leftChan
-//     right := <-rightChan
-//     ch <- merge(left, right)
-// }
+    // Fusionner les résultats
+    left := <-leftChan
+    right := <-rightChan
+    ch <- merge(left, right)
+}
 
-// func main() {
-//     // Tableau à trier
-//     arr := []int{38, 27, 43, 3, 9, 82, 10}
+func main() {
+    // Tableau à trier
+    arr := []int{38, 27, 43, 3, 9, 82, 10}
 
-//     fmt.Println("Tableau initial :", arr)
+    fmt.Println("Tableau initial :", arr)
 
-//     // Channel pour récupérer le tableau trié
-//     ch := make(chan []int, 1)
-//     var wg sync.WaitGroup
+    // Channel pour récupérer le tableau trié
+    ch := make(chan []int, 1)
+    var wg sync.WaitGroup
 
-//     // Lancer le tri fusion parallèle
-//     wg.Add(1)
-//     go mergeSort(arr, &wg, ch)
+    // Lancer le tri fusion parallèle
+    wg.Add(1)
+    go mergeSort(arr, &wg, ch)
 
-//     // Attendre la fin du tri
-//     wg.Wait()
-//     close(ch)
+    // Attendre la fin du tri
+    wg.Wait()
+    close(ch)
 
-//     // Récupérer le tableau trié
-//     sortedArr := <-ch
-//     fmt.Println("Tableau trié :", sortedArr)
-// }
+    // Récupérer le tableau trié
+    sortedArr := <-ch
+    fmt.Println("Tableau trié :", sortedArr)
+}
